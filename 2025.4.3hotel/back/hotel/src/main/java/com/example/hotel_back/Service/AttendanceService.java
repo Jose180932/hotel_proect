@@ -4,6 +4,7 @@ import com.example.hotel_back.Common.result.PageResult;
 import com.example.hotel_back.Pojo.DAO.AttendanceQueryDTO;
 import com.example.hotel_back.Pojo.DAO.AttendanceStatusUpdateDTO;
 import com.example.hotel_back.Pojo.DAO.employeedao.EAttendanceQueryDTO;
+import com.example.hotel_back.Pojo.VO.employeevo.AttendanceStatusVO;
 
 import java.time.LocalDate;
 
@@ -39,15 +40,7 @@ public interface AttendanceService {
      * 获取员工当日签到状态
      * @param employeeId 员工ID
      * @param date 日期
-     * @return 签到状态
-     * -1：未签到未签退（初始状态）
-     * 0：正常（已签到已签退）
-     * 1：迟到（已签到未签退）
-     * 2：早退（已签到已签退）
-     * 3：旷工
-     * 4：请假（未签到未签退）
-     * 5：已签到未签退
-     * null：未找到记录
+     * @return 签到状态和打卡时间，未找到记录时状态为 -1
      */
-    Integer getAttendanceStatus(Long employeeId, LocalDate date);
+    AttendanceStatusVO getAttendanceStatus(Long employeeId, LocalDate date);
 }

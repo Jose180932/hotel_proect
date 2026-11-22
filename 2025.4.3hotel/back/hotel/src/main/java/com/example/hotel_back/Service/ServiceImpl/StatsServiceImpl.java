@@ -22,6 +22,11 @@ public class StatsServiceImpl implements StatsService {
     @Autowired
     private StatsMapper statsMapper;
 
+    @Override
+    public List<CustomerStatVO> getCustomerStats(RoomSalesQueryDTO queryDTO) {
+        return statsMapper.getCustomerStats(queryDTO.getStartDate(), queryDTO.getEndDate());
+    }
+
     public List<RoomSalesStatVO> getRoomSalesStats(RoomSalesQueryDTO queryDTO) {
         // 计算日期范围内的总天数
         long totalDays = ChronoUnit.DAYS.between(queryDTO.getStartDate(), queryDTO.getEndDate()) + 1;

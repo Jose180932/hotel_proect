@@ -134,5 +134,11 @@ public class AdminController {
         adminService.updateEmployee(employeeUpdateAdminDTO);
         return Result.success();
     }
-}
 
+    @PutMapping("/employee/{id}/fire")
+    public Result<String> fireEmployee(@PathVariable Long id) {
+        log.info("解雇员工，id：{}", id);
+        adminService.fireEmployee(id);
+        return Result.success("已解雇");
+    }
+}

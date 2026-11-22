@@ -1,6 +1,7 @@
 package com.example.hotel_back.Service;
 
 import com.example.hotel_back.Pojo.DAO.*;
+import com.example.hotel_back.Pojo.VO.CustomerStatVO;
 import com.example.hotel_back.Pojo.VO.ExpenseStatVO;
 import com.example.hotel_back.Pojo.VO.IncomeStatVO;
 import com.example.hotel_back.Pojo.VO.ProfitStatVO;
@@ -18,6 +19,8 @@ public interface StatsService {
      * @return 客房销售统计列表
      */
     List<RoomSalesStatVO> getRoomSalesStats(RoomSalesQueryDTO queryDTO);
+
+    List<CustomerStatVO> getCustomerStats(RoomSalesQueryDTO queryDTO);
     /**
      * 获取收入统计
      * @param queryDTO 查询条件

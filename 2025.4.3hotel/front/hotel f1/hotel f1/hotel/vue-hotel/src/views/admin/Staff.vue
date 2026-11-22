@@ -1,7 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getEmployeeList, getEmployeeInfo, updateEmployee, addEmployee, getRoleOptions } from '@/api/admin'
+import { getEmployeeList, getEmployeeInfo, updateEmployee, addEmployee, getRoleOptions, fireEmployee } from '@/api/admin'
+
+// 当前登录的管理员（不能解雇自己）
+const currentEmployee = JSON.parse(localStorage.getItem('LoginEmployee') || '{}')
 
 // 搜索表单
 const searchForm = ref({
@@ -240,8 +243,18 @@ const goToHome = () => {
 }
 
 // 生命周期钩子
-onMounted(() => {
-  fetchRoles()
+const fireStaff = async (staff) => {
+  if (!window.confirm(`确定解雇「${staff.realName || staff.username}」吗？解雇后该账号将无法登录。`)) return
+  try {
+    await fireEmployee(staff.id)
+    ElMessage.success('已解雇')
+    await fetchStaff()
+  } catch (e) {
+    ElMessage.error(e.message || '解雇失败')
+  }
+}
+
+onMounted(() => {  fetchRoles()
   fetchStaff()
 })
 </script>
@@ -376,6 +389,13 @@ onMounted(() => {
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <button @click.stop="openEditDialog(staff)" class="text-indigo-600 hover:text-indigo-900">
                 编辑
+              </button>
+              <button
+                v-if="staff.id !== currentEmployee.id"
+                @click.stop="fireStaff(staff)"
+                class="ml-3 text-red-600 hover:text-red-800"
+              >
+                解雇
               </button>
             </td>
           </tr>

@@ -1,34 +1,18 @@
 package com.example.hotel_back.Service;
 
-import com.example.hotel_back.Common.result.PageResult;
-import com.example.hotel_back.Pojo.DAO.RoleAddDTO;
-import com.example.hotel_back.Pojo.DAO.RolePageQueryDTO;
-import com.example.hotel_back.Pojo.DAO.RoleUpdateDTO;
 import com.example.hotel_back.Pojo.VO.RoleNameVO;
-import com.example.hotel_back.Pojo.VO.RoleVO;
 
 import java.util.List;
 
+/**
+ * 角色只读服务：
+ * 员工表单需要选择职位，因此保留角色列表查询；
+ * 角色的新增/修改/分页管理已下线（避免管理员给自己改角色）。
+ */
 public interface RoleService {
+
     /**
-     * 添加角色
-     * @param roleAddDTO 角色信息
-     */
-    void add(RoleAddDTO roleAddDTO);
-    /**
-     * 分页查询角色信息
-     * @param rolePageQueryDTO 角色信息
-     * @return 角色信息
-     */
-    PageResult rolePageQuery(RolePageQueryDTO rolePageQueryDTO);
-    /**
-     * 更新角色信息
-     * @param roleUpdateDTO 角色信息
-     */
-    void update(RoleUpdateDTO roleUpdateDTO);
-    /**
-     * 获取所有角色列表
-     * @return 角色列表
+     * 获取启用状态的角色列表（用于员工表单下拉）
      */
     List<RoleNameVO> getAllRoles();
 }

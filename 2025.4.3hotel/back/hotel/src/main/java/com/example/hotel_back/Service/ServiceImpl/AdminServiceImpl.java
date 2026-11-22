@@ -4,6 +4,7 @@ import com.example.hotel_back.mapper.RoleMapper;
 import com.example.hotel_back.Common.constant.MessageConstant;
 import com.example.hotel_back.Common.constant.PasswordConstant;
 import com.example.hotel_back.Common.constant.StatusConstant;
+import com.example.hotel_back.Common.context.BaseContext;
 import com.example.hotel_back.Common.exception.AccountLockedException;
 import com.example.hotel_back.Common.exception.AccountNotFoundException;
 import com.example.hotel_back.Common.exception.BusinessException;
@@ -193,8 +194,14 @@ public class AdminServiceImpl implements AdminService {
 
         return employeeInfoVO;
     }
-    public void updateEmployee(EmployeeUpdateAdminDTO employeeUpdateAdminDTO) {
+        public void updateEmployee(EmployeeUpdateAdminDTO employeeUpdateAdminDTO) {
 
+        // 管理员不能修改自己的角色和状态，避免“自己管自己”
+        Long currentId = BaseContext.getCurrentId();
+        if (currentId != null && currentId.equals(employeeUpdateAdminDTO.getId())) {
+            employeeUpdateAdminDTO.setRoleId(null);
+            employeeUpdateAdminDTO.setStatus(null);
+        }
         // 创建员工对象
         Employee employee = new Employee();
        BeanUtils.copyProperties(employeeUpdateAdminDTO, employee);
@@ -207,4 +214,22 @@ public class AdminServiceImpl implements AdminService {
         adminMapper.updateEmployee(employee);
     }
 
+    @Override
+    public void fireEmployee(Long employeeId) {
+        Long currentId = BaseContext.getCurrentId();
+        if (currentId != null && currentId.equals(employeeId)) {
+            throw new BusinessException("不能解雇自己");
+        }
+        Employee employee = adminMapper.getById(employeeId);
+        if (employee == null) {
+            throw new BusinessException("员工不存在");
+        }
+        if (employee.getRoleId() != null && employee.getRoleId() == 1L) {
+            throw new BusinessException("不能解雇超级管理员");
+        }
+        if (employee.getStatus() != null && employee.getStatus() == StatusConstant.DISABLE) {
+            throw new BusinessException("该员工已是离职状态");
+        }
+        adminMapper.fireEmployee(employeeId);
+    }
 }

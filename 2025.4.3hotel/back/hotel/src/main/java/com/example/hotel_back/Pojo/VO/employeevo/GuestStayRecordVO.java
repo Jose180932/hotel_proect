@@ -19,6 +19,10 @@ public class GuestStayRecordVO implements Serializable {
     
     // 订单号
     private String orderNo;
+
+    private String guestName;
+
+    private String guestPhone;
     
     // 房间号
     private String roomNumber;

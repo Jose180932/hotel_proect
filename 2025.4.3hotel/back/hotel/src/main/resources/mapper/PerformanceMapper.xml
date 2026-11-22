@@ -3,7 +3,7 @@
 <mapper namespace="com.example.hotel_back.mapper.PerformanceMapper">
     <select id="getByEmployeeIdAndMonth" resultType="com.example.hotel_back.Pojo.Entity.Performance">
         SELECT * FROM performance
-        WHERE employee_id = #{employeeId} AND month = #{month}
+        WHERE employee_id = #{employeeId} AND month = #{month} AND COALESCE(flag, 0) = 0
     </select>
     <select id="pageQuery" resultType="com.example.hotel_back.Pojo.VO.PerformanceVO">
         SELECT p.id, p.employee_id as employeeId, e.real_name as employeeName,
@@ -14,6 +14,7 @@
         LEFT JOIN employee e ON p.employee_id = e.id
         LEFT JOIN employee admin ON p.evaluator_id = admin.id
         <where>
+            COALESCE(p.flag, 0) = 0
             <if test="employeeId != null">
                 AND p.employee_id = #{employeeId}
             </if>
@@ -26,11 +27,17 @@
             <if test="month != null and month != ''">
                 AND p.month = #{month}
             </if>
+            <if test="startMonth != null and startMonth != ''">
+                AND p.month &gt;= #{startMonth}
+            </if>
+            <if test="endMonth != null and endMonth != ''">
+                AND p.month &lt;= #{endMonth}
+            </if>
         </where>
-        ORDER BY p.month DESC, p.employee_id ASC
+        ORDER BY p.month DESC, p.employee_id ASC, p.id DESC
     </select>
     <select id="getById" resultType="com.example.hotel_back.Pojo.Entity.Performance">
-        SELECT * FROM performance WHERE id = #{id}
+        SELECT * FROM performance WHERE id = #{id} AND COALESCE(flag, 0) = 0
     </select>
 
     <update id="update" parameterType="com.example.hotel_back.Pojo.Entity.Performance">
@@ -47,6 +54,6 @@
             </if>
             update_time = NOW()
         </set>
-        WHERE id = #{id}
+        WHERE id = #{id} AND COALESCE(flag, 0) = 0
     </update>
 </mapper>

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -22,4 +23,8 @@ public class AttendanceStatusVO implements Serializable {
     // 4：请假（未签到未签退）
     // 5：已签到未签退
     private Integer status;
+
+    private LocalDateTime checkInTime;
+
+    private LocalDateTime checkOutTime;
 }

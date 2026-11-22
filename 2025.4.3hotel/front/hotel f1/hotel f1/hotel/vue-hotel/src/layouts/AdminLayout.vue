@@ -14,6 +14,7 @@ import {
   UserFilled,
   Medal,
   DataAnalysis,
+  Collection,
   ArrowDown
 } from '@element-plus/icons-vue'
 
@@ -74,6 +75,7 @@ const handleCommand = (command) => {
 
           <el-menu
               :default-active="activeMenu"
+              :ellipsis="false"
               mode="horizontal"
               router
               class="el-menu-horizontal"
@@ -91,11 +93,6 @@ const handleCommand = (command) => {
             <el-menu-item index="/admin/account">
               <el-icon><User /></el-icon>
               <span>账户管理</span>
-            </el-menu-item>
-
-            <el-menu-item index="/admin/role">
-              <el-icon><Setting /></el-icon>
-              <span>角色管理</span>
             </el-menu-item>
 
             <el-menu-item index="/admin/staff">
@@ -131,6 +128,11 @@ const handleCommand = (command) => {
             <el-menu-item index="/admin/report">
               <el-icon><Document /></el-icon>
               <span>报表统计</span>
+            </el-menu-item>
+
+            <el-menu-item index="/admin/knowledge">
+              <el-icon><Collection /></el-icon>
+              <span>知识库</span>
             </el-menu-item>
           </el-menu>
 

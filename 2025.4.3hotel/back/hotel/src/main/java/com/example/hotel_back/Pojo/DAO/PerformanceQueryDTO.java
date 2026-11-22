@@ -20,6 +20,10 @@ public class PerformanceQueryDTO implements Serializable {
     
     // 月份
     private String month;
+
+    private String startMonth;
+
+    private String endMonth;
     
     // 页码
     private int pageNum = 1;

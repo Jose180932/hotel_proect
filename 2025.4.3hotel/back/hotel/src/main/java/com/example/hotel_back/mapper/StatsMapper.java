@@ -21,6 +21,27 @@ public interface StatsMapper {
      */
     List<RoomSalesStatVO> getRoomSalesStats(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 
+    @Select("""
+            SELECT DATE_FORMAT(bo.check_in_date, '%Y-%m') AS month,
+                   COUNT(DISTINCT CASE WHEN DATE_FORMAT(history.first_stay, '%Y-%m') =
+                                            DATE_FORMAT(bo.check_in_date, '%Y-%m')
+                                       THEN bo.user_id END) AS newCustomers,
+                   COUNT(DISTINCT CASE WHEN DATE_FORMAT(history.first_stay, '%Y-%m') <
+                                            DATE_FORMAT(bo.check_in_date, '%Y-%m')
+                                       THEN bo.user_id END) AS returningCustomers,
+                   ROUND(AVG(bo.days), 2) AS averageStay,
+                   ROUND(AVG(bo.total_amount), 2) AS averageOrderAmount
+            FROM booking_order bo
+            JOIN (SELECT user_id, MIN(check_in_date) AS first_stay
+                  FROM booking_order
+                  WHERE status IN (3, 4) AND user_id IS NOT NULL
+                  GROUP BY user_id) history ON history.user_id = bo.user_id
+            WHERE bo.status IN (3, 4) AND bo.check_in_date BETWEEN #{startDate} AND #{endDate}
+            GROUP BY DATE_FORMAT(bo.check_in_date, '%Y-%m')
+            ORDER BY month
+            """)
+    List<CustomerStatVO> getCustomerStats(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
     /**
      * 获取指定房型的房间数量
      * @param roomTypeId 房型ID

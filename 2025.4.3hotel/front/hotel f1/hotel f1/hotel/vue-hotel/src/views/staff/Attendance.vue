@@ -195,10 +195,10 @@ const checkTodayAttendanceStatus = async () => {
       console.log('解析后的考勤状态:', status)
       
       attendanceStatus.value = {
-        clockedIn: status !== -1 && status !== 4 && status !== 3, // 除了未签到、请假和旷工外，都算已签到
-        clockedOut: status === 0 || status === 1 || status === 2, // 正常、迟到、早退状态表示已签退
-        clockInTime: '', // API目前可能不返回具体时间
-        clockOutTime: '',
+        clockedIn: Boolean(res.data.checkInTime),
+        clockedOut: Boolean(res.data.checkOutTime),
+        clockInTime: res.data.checkInTime ?? '',
+        clockOutTime: res.data.checkOutTime ?? '',
         status: status
       }
     } else {

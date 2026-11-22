@@ -4,7 +4,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getRoomTypeDetail } from '@/api/roomType'
 import { addFavorite, cancelFavorite } from '@/api/favorite'
-import { getRoomTypeReviews } from '@/api/review'
 import { getOrderListByRoomType, createOrder } from '@/api/order'
 import { getUserInfo } from '@/api/user'
 import { Plus, Star, Calendar, Message, ArrowLeft, StarFilled, Picture, User, HomeFilled, Sunrise, Connection } from '@element-plus/icons-vue'
@@ -16,12 +15,6 @@ const room = ref(null)
 const activeImage = ref(0)
 const isFavorite = ref(false)
 const favoriteLoading = ref(false)
-
-// 评论分页参数
-const reviewPage = ref(1)
-const reviewPageSize = ref(5)
-const hasMoreReviews = ref(true)
-const loadingMoreReviews = ref(false)
 
 // 预订相关状态变量
 const dateRange = ref([])
@@ -433,42 +426,6 @@ const toggleFavorite = async () => {
     ElMessage.error(isFavorite.value ? '取消收藏失败' : '添加收藏失败')
   } finally {
     favoriteLoading.value = false
-  }
-}
-
-// 加载更多评论
-const loadMoreReviews = async () => {
-  if (!room.value || !hasMoreReviews.value || loadingMoreReviews.value) return
-  
-  loadingMoreReviews.value = true
-  try {
-    reviewPage.value += 1
-    const params = {
-      roomTypeId: room.value.id,
-      pageNum: reviewPage.value,
-      pageSize: reviewPageSize.value
-    }
-    
-    const res = await getRoomTypeReviews(params)
-    
-    if (res.code === 200 && res.data) {
-      if (res.data.list && res.data.list.length > 0) {
-        room.value.reviews = [
-          ...room.value.reviews,
-          ...processReviews(res.data.list)
-        ]
-      }
-      
-      // 判断是否还有更多评论
-      hasMoreReviews.value = res.data.list.length === reviewPageSize.value
-    } else {
-      ElMessage.error(res.message || '获取更多评价失败')
-    }
-  } catch (error) {
-    console.error('获取更多评价失败:', error)
-    ElMessage.error('获取更多评价失败，请稍后再试')
-  } finally {
-    loadingMoreReviews.value = false
   }
 }
 

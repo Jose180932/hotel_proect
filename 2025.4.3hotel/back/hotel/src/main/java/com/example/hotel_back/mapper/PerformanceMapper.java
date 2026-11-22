@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface PerformanceMapper {
@@ -50,4 +51,7 @@ public interface PerformanceMapper {
      */
     @AutoFill(value = OperationTypeConstant.UPDATE)
     void update(Performance performance);
+
+    @Update("UPDATE performance SET flag = 1, update_time = NOW() WHERE id = #{id} AND COALESCE(flag, 0) = 0")
+    int softDeleteById(@Param("id") Long id);
 }

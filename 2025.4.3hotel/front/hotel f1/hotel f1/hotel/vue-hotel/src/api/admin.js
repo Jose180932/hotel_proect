@@ -58,11 +58,7 @@ export function updateEmployee(data) {
  * @returns {Promise}
  */
 export function resetPassword(data) {
-  return request({
-    url: '/api/admin/employee/resetPassword',
-    method: 'post',
-    data
-  })
+  return updateEmployee({ id: data.id, password: data.password })
 }
 
 /**
@@ -70,6 +66,13 @@ export function resetPassword(data) {
  * @param {number} id - 员工ID
  * @returns {Promise}
  */
+export function fireEmployee(id) {
+  return request({
+    url: `/api/admin/employee/${id}/fire`,
+    method: 'put'
+  })
+}
+
 export function getEmployeeInfo(id) {
   return request({
     url: `/api/admin/employee/info/${id}`,
@@ -83,7 +86,7 @@ export function getEmployeeInfo(id) {
  */
 export function getRoleList() {
   return request({
-    url: '/api/admin/role/list',
+    url: '/api/admin/common/getrole',
     method: 'get'
   })
 }
@@ -93,26 +96,12 @@ export function getRoleList() {
  * @param {Object} data - 角色信息
  * @returns {Promise}
  */
-export function addRole(data) {
-  return request({
-    url: '/api/admin/role/add',
-    method: 'post',
-    data
-  })
-}
 
 /**
  * 更新角色
  * @param {Object} data - 角色信息
  * @returns {Promise}
  */
-export function updateRole(data) {
-  return request({
-    url: '/api/admin/role/update',
-    method: 'put',
-    data
-  })
-}
 
 /**
  * 获取管理员信息
@@ -227,6 +216,13 @@ export function updatePerformance(data) {
   })
 }
 
+export function deletePerformanceRecord(id) {
+  return request({
+    url: `/api/admin/performance/delete/${id}`,
+    method: 'delete'
+  })
+}
+
 /**
  * 获取收入记录列表
  * @param {Object} params - 查询参数
@@ -300,6 +296,14 @@ export function getRoomSalesStats(params) {
 export function getIncomeStats(params) {
   return request({
     url: '/api/admin/stats/income',
+    method: 'get',
+    params
+  })
+}
+
+export function getCustomerStats(params) {
+  return request({
+    url: '/api/admin/stats/customers',
     method: 'get',
     params
   })
@@ -439,8 +443,7 @@ export default {
   resetPassword,
   getEmployeeInfo,
   getRoleList,
-  addRole,
-  updateRole,
+  fireEmployee,
   updateUserInfo,
   updatePassword,
   getAdminInfo,

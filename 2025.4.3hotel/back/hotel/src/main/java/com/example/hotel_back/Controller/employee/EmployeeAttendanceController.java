@@ -55,14 +55,6 @@ public class EmployeeAttendanceController {
         Long employeeId = BaseContext.getCurrentId();
         log.info("查询员工签到状态，员工ID：{}，日期：{}", employeeId, today);
 
-        // 查询签到状态
-        Integer status = attendanceService.getAttendanceStatus(employeeId, today);
-
-        // 如果状态为null，设置为-1（未签到未签退）
-        if (status == null) {
-            status = -1;
-        }
-
-        return Result.success(new AttendanceStatusVO(status));
+        return Result.success(attendanceService.getAttendanceStatus(employeeId, today));
     }
 }

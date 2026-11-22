@@ -8,6 +8,8 @@ import com.github.pagehelper.Page;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
@@ -44,4 +46,10 @@ public interface AdminMapper {
      */
     @AutoFill(value = OperationTypeConstant.UPDATE)
     void updateEmployee(Employee employee);
+
+    /**
+     * 解雇：置为禁用状态（0=禁用，无法登录）
+     */
+    @Update("update employee set status = 0, update_time = now() where id = #{id}")
+    void fireEmployee(@Param("id") Long id);
 }

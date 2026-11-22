@@ -110,4 +110,15 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         log.info("修改绩效评估成功，管理员ID：{}，绩效ID：{}", adminId, updateDTO.getId());
     }
+
+    @Override
+    public void delete(Long adminId, Long id) {
+        Employee admin = employeeMapper.getById(adminId);
+        if (admin == null || !Long.valueOf(1L).equals(admin.getRoleId()) || !Integer.valueOf(1).equals(admin.getStatus())) {
+            throw new BusinessException("仅启用的管理员可删除绩效记录");
+        }
+        if (performanceMapper.softDeleteById(id) == 0) {
+            throw new BusinessException("绩效记录不存在");
+        }
+    }
 }

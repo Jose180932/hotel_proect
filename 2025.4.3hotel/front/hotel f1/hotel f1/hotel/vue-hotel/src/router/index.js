@@ -330,6 +330,12 @@ const adminRoutes = [
         meta: { title: '管理首页', requireAdminAuth: true }
       },
       {
+        path: 'knowledge',
+        name: 'AdminKnowledge',
+        component: () => import('../views/admin/Knowledge.vue'),
+        meta: { title: '知识库', requireAdminAuth: true }
+      },
+      {
         path: 'attendance',
         name: 'AdminAttendance',
         component: () => import('../views/admin/Attendance.vue'),
@@ -340,18 +346,6 @@ const adminRoutes = [
         name: 'AdminAccount',
         component: () => import('../views/admin/Account.vue'),
         meta: { title: '账户管理', requireAdminAuth: true }
-      },
-      {
-        path: 'role',
-        name: 'AdminRole',
-        component: () => import('../views/admin/Role.vue'),
-        meta: { title: '角色管理', requireAdminAuth: true }
-      },
-      {
-        path: 'role-manage',
-        name: 'AdminRoleManage',
-        component: () => import('../views/admin/RoleManage.vue'),
-        meta: { title: '角色管理', requireAdminAuth: true }
       },
       {
         path: 'employee-manage',
