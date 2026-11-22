@@ -116,7 +116,8 @@ public interface StatsMapper {
     @Select("SELECT COUNT(*) FROM room WHERE status = 2")
     Integer getStayingCount();
 
-    @Select("SELECT status AS name, COUNT(*) AS value FROM room GROUP BY status ORDER BY status")
+    // CAST 成整数：status 是 tinyint(1)，MySQL 驱动会映射成 Boolean，前端按 1~5 查房态名称会拿到 true
+    @Select("SELECT CAST(status AS SIGNED) AS name, COUNT(*) AS value FROM room GROUP BY status ORDER BY status")
     List<Map<String, Object>> getRoomStatusCount();
 
     @Select("SELECT payment_method AS name, IFNULL(SUM(amount),0) AS value FROM income_record WHERE payment_method IS NOT NULL AND payment_method != '' GROUP BY payment_method")

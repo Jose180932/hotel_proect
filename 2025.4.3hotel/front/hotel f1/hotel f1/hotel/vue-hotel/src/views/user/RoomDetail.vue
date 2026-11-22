@@ -39,8 +39,8 @@ const bookingForm = ref({
 })
 
 // 默认图片URL和基础URL
-const DEFAULT_ROOM_IMAGE = 'https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png'
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const DEFAULT_ROOM_IMAGE = '/upload/64816e69-9816-43d2-9a83-3252ed0aedec.jpg'
+// 图片统一使用相对路径（/upload/...），由 vite 代理或同源服务提供
 
 // 监听收藏状态变化
 watch(() => isFavorite.value, (newValue) => {
@@ -65,7 +65,7 @@ const processImageUrl = (url) => {
   }
 
   // 处理相对路径
-  let baseApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+  let baseApiUrl = ''; // 相对路径：交给 vite 代理/同源，避免把端口写死
   
   // 确保baseApiUrl不以/结尾
   if (baseApiUrl.endsWith('/')) {
@@ -211,9 +211,9 @@ const getBackupRoomData = (id) => {
       id: 1,
       name: '标准单人间',
       images: [
-        'https://img0.baidu.com/it/u=2832536829,4090354037&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
-        'https://img1.baidu.com/it/u=147501608,1562263135&fm=253&fmt=auto&app=120&f=JPEG?w=1140&h=641',
-        'https://img0.baidu.com/it/u=3417945977,3650199198&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333'
+        '/upload/28089a3a-c73d-435a-bb95-defa40655ab1.jpg',
+        '/upload/3078ef48-bc00-4b3b-bc40-9e32c212ea0b.jpg',
+        '/upload/39748644-0495-4455-8925-4bdb29134951.jpg'
       ],
       price: 258,
       discount: 1,
@@ -238,9 +238,9 @@ const getBackupRoomData = (id) => {
       id: 2,
       name: '豪华大床房',
       images: [
-        'https://img0.baidu.com/it/u=2141061893,3465688082&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
-        'https://img0.baidu.com/it/u=3106197342,3338660926&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
-        'https://img2.baidu.com/it/u=3462337972,288786938&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333'
+        '/upload/5a46ac76-74cc-4367-8bf5-12ed22b56361.jpg',
+        '/upload/7226c101-9cce-446f-8250-5eb365cb3186.jpg',
+        '/upload/64816e69-9816-43d2-9a83-3252ed0aedec.jpg'
       ],
       price: 398,
       discount: 1,
@@ -277,6 +277,8 @@ const getBackupRoomData = (id) => {
 
 // 获取用户信息
 const fetchUserInfo = async () => {
+  // 游客（无 token）不请求用户信息，避免 401 被强制跳转登录页
+  if (!localStorage.getItem('token')) { userLoading.value = false; return; }
   userLoading.value = true
   try {
     const res = await getUserInfo()

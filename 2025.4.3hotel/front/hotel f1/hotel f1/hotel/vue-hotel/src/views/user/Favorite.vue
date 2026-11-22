@@ -12,7 +12,7 @@ const currentPage = ref(1)
 const pageSize = ref(8)
 
 // 从环境变量获取基础URL
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const baseUrl = '' // 相对路径，交给 vite 代理 / 同源
 
 // 加载收藏数据
 const fetchFavorites = async () => {

@@ -36,7 +36,7 @@ const fetchHotRoomTypes = async () => {
       {
         id: 1,
         name: '豪华大床房',
-        image: 'https://img0.baidu.com/it/u=2141061893,3465688082&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+        image: '/upload/5a46ac76-74cc-4367-8bf5-12ed22b56361.jpg',
         price: 398,
         description: '宽敞明亮的客房配备特大号床，提供舒适的睡眠体验，配有现代化设施。',
         bedType: '特大号床',
@@ -46,7 +46,7 @@ const fetchHotRoomTypes = async () => {
       {
         id: 2,
         name: '行政套房',
-        image: 'https://img1.baidu.com/it/u=1979540962,1457794044&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+        image: '/upload/64816e69-9816-43d2-9a83-3252ed0aedec.jpg',
         price: 598,
         description: '高端豪华套房，独立客厅和卧室，享受更多空间和私密性，配备顶级设施。',
         bedType: '特大号床',
@@ -56,7 +56,7 @@ const fetchHotRoomTypes = async () => {
       {
         id: 3,
         name: '家庭房',
-        image: 'https://img2.baidu.com/it/u=3482414296,1599253536&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+        image: '/upload/d434242d-e465-43ae-bea2-0d71d248ef6c.jpg',
         price: 498,
         description: '宽敞的房间配备双床，适合家庭入住，配备儿童设施，温馨舒适。',
         bedType: '一张大床和一张单人床',
@@ -66,7 +66,7 @@ const fetchHotRoomTypes = async () => {
       {
         id: 4,
         name: '标准双床房',
-        image: 'https://img1.baidu.com/it/u=1187860984,2261105129&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+        image: '/upload/5b32b1a7-2dfe-4ad3-8593-6533039a59d4.jpg',
         price: 328,
         description: '实用的双床房，配有两张单人床，简约舒适，适合商务或结伴出行。',
         bedType: '两张单人床',
@@ -176,7 +176,7 @@ const viewRoomDetail = (id) => {
 }
 
 .banner {
-  background-image: url('https://img0.baidu.com/it/u=2834113278,3783056987&fm=253&fmt=auto&app=138&f=JPEG?w=1180&h=492');
+  background-image: url('/upload/64816e69-9816-43d2-9a83-3252ed0aedec.jpg');
   background-size: cover;
   background-position: center;
   position: relative;

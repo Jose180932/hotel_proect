@@ -2,7 +2,8 @@
 -- 酒店管理系统 - 初始化演示数据
 -- 数据库：hotel (MySQL)
 -- 说明：
---   1. 字段严格按《数据库建表语句（mysql）.docx》中的实际表结构生成。
+--   1. 表结构以 db/mysql/schema.sql 为准（已含 real_name/sex/id_card、
+--      check_out_date/check_out_time、各表 update_time 等字段）。
 --   2. 请在“空表”上执行（建议先执行下方注释里的清空语句）。
 --   3. 所有账号密码均为 123456（存储为 MD5，用 MD5('123456') 直接生成）。
 --      管理员登录：工号 A001 / 密码 123456
@@ -12,24 +13,11 @@
 -- =====================================================================
 
 -- =====================================================================
--- 结构补齐（建议先执行，补齐后端代码引用但建表语句缺失的字段）：
---   不补齐会导致 实名认证 / 退房 / 考勤签退 / 评价回复 / 房型图片 等功能
---   运行时报 Unknown column 错误。
---   注意：每张表只需执行一次；若重复执行报 Duplicate column name 属正常。
+-- 结构说明：本脚本只灌数据，不建表、不改表。
+--   schema.sql 已经包含 real_name/sex/id_card、check_out_date/check_out_time、
+--   各表 update_time 等全部字段，无需再补列；
+--   MySQL 8 不支持 ADD COLUMN IF NOT EXISTS，重复 ALTER 会直接报 Duplicate column。
 -- =====================================================================
-ALTER TABLE user
-  ADD COLUMN real_name varchar(50)  DEFAULT NULL COMMENT '真实姓名' AFTER nickname,
-  ADD COLUMN sex       varchar(10)  DEFAULT NULL COMMENT '性别'     AFTER real_name,
-  ADD COLUMN id_card   varchar(20)  DEFAULT NULL COMMENT '身份证号' AFTER sex;
-
-ALTER TABLE check_in_record
-  ADD COLUMN check_out_date date     DEFAULT NULL COMMENT '预计退房日期' AFTER check_in_time,
-  ADD COLUMN check_out_time datetime DEFAULT NULL COMMENT '实际退房时间' AFTER check_out_date;
-
-ALTER TABLE room_type_image      ADD COLUMN update_time datetime DEFAULT NULL COMMENT '更新时间' AFTER create_time;
-ALTER TABLE check_out_settlement ADD COLUMN update_time datetime DEFAULT NULL COMMENT '更新时间' AFTER create_time;
-ALTER TABLE review               ADD COLUMN update_time datetime DEFAULT NULL COMMENT '更新时间' AFTER create_time;
-ALTER TABLE attendance           ADD COLUMN update_time datetime DEFAULT NULL COMMENT '更新时间' AFTER create_time;
 
 -- 如需重置（可选，仅当你要清空重灌时取消注释）：
 -- SET FOREIGN_KEY_CHECKS = 0;
@@ -37,7 +25,7 @@ ALTER TABLE attendance           ADD COLUMN update_time datetime DEFAULT NULL CO
 -- TRUNCATE check_out_settlement; TRUNCATE check_in_record; TRUNCATE booking_order;
 -- TRUNCATE room; TRUNCATE room_type_image; TRUNCATE room_type;
 -- TRUNCATE attendance; TRUNCATE performance; TRUNCATE income_record; TRUNCATE expense_record;
--- TRUNCATE employee; TRUNCATE role; TRUNCATE user;
+-- TRUNCATE employee; TRUNCATE role; TRUNCATE users;
 -- SET FOREIGN_KEY_CHECKS = 1;
 
 -- ---------------------------------------------------------------------
@@ -51,7 +39,7 @@ INSERT INTO role (id, role_name, description, status, create_time, update_time) 
 (5, '人事',       '负责员工与绩效管理', 1, NOW(), NOW());
 
 -- ---------------------------------------------------------------------
--- 2. 员工表 employee（密码统一 123456；建表语句无 sex/id_card 字段）
+-- 2. 员工表 employee（密码统一 123456；schema 有 sex 字段，本脚本留空不填）
 -- ---------------------------------------------------------------------
 INSERT INTO employee
 (id, emp_no, username, password, real_name, phone, avatar, role_id, status, create_time, update_time) VALUES
@@ -62,14 +50,14 @@ INSERT INTO employee
 (5, 'E1004', 'zhaoliu',  MD5('123456'), '赵六',       '13800000005', '', 5, 1, NOW(), NOW());
 
 -- ---------------------------------------------------------------------
--- 3. 用户表 user（nickname 为原建表字段，real_name/sex/id_card 为补齐字段）
+-- 3. 用户表 users（列名是 users / username，没有 nickname 列；登录用手机号）
 -- ---------------------------------------------------------------------
-INSERT INTO user
-(id, username, password, phone, nickname, real_name, sex, id_card, avatar, status, create_time, update_time) VALUES
-(1, 'tom',       MD5('123456'), '13900000001', '汤姆',   '汤姆',   '男', '310101199002020001', '', 1, NOW(), NOW()),
-(2, 'lily',      MD5('123456'), '13900000002', '莉莉',   '莉莉',   '女', '310101199306180002', '', 1, NOW(), NOW()),
-(3, 'jack',      MD5('123456'), '13900000003', '杰克',   '杰克',   '男', '310101198811250003', '', 1, NOW(), NOW()),
-(4, 'hanmeimei', MD5('123456'), '13900000004', '韩梅梅', '韩梅梅', '女', '310101199510300004', '', 1, NOW(), NOW());
+INSERT INTO users
+(id, username, password, phone, real_name, sex, id_card, avatar, status, create_time, update_time) VALUES
+(1, '汤姆',   MD5('123456'), '13900000001', '汤姆',   '男', '310101199002020001', '', 1, NOW(), NOW()),
+(2, '莉莉',   MD5('123456'), '13900000002', '莉莉',   '女', '310101199306180002', '', 1, NOW(), NOW()),
+(3, '杰克',   MD5('123456'), '13900000003', '杰克',   '男', '310101198811250003', '', 1, NOW(), NOW()),
+(4, '韩梅梅', MD5('123456'), '13900000004', '韩梅梅', '女', '310101199510300004', '', 1, NOW(), NOW());
 
 -- ---------------------------------------------------------------------
 -- 4. 房型表 room_type
@@ -143,7 +131,7 @@ INSERT INTO check_in_record
 (5, 5, 7,  4, '韩梅梅', '13900000004', '310101199510300004', '2026-11-07 13:00:00', '2026-11-09', NULL, 200.00, 0, NULL, 2, '2026-11-07 13:00:00', NOW());
 
 -- ---------------------------------------------------------------------
--- 9. 退房结算表 check_out_settlement（建表语句无 update_time）
+-- 9. 退房结算表 check_out_settlement（update_time 可留空，本脚本不填）
 -- ---------------------------------------------------------------------
 INSERT INTO check_out_settlement
 (id, check_in_id, order_id, room_id, user_id, extra_fee, damage_fee, total_fee,
@@ -182,11 +170,10 @@ INSERT INTO expense_record
 (5,  2000.00, 1, '银行转账', 2, '洗漱用品采购',   '2026-11-05 11:00:00', NOW());
 
 -- ---------------------------------------------------------------------
--- 12. 考勤表 attendance（status: 0正常 1迟到 2早退 3旷工 4请假 5已签到未签退）
---     建表语句无 update_time
+-- 12. 考勤表 attendance（日期列名是 attendance_date；status: 0正常 1迟到 2早退 3旷工 4请假 5已签到未签退）
 -- ---------------------------------------------------------------------
 INSERT INTO attendance
-(id, employee_id, date, check_in_time, check_out_time, status, create_time) VALUES
+(id, employee_id, attendance_date, check_in_time, check_out_time, status, create_time) VALUES
 (1, 2, '2026-11-06', '2026-11-06 08:50:00', '2026-11-06 18:05:00', 0, NOW()),
 (2, 2, '2026-11-07', '2026-11-07 08:55:00', '2026-11-07 18:00:00', 0, NOW()),
 (3, 3, '2026-11-06', '2026-11-06 09:10:00', '2026-11-06 18:00:00', 1, NOW()),
@@ -207,7 +194,7 @@ INSERT INTO performance
 (4, 5, '2026-10', 90.00, '招聘与考勤管理工作完成良好',    1, NOW(), NOW());
 
 -- ---------------------------------------------------------------------
--- 14. 评价表 review（score 1-5，status: 0隐藏 1显示；建表语句无 update_time）
+-- 14. 评价表 review（score 1-5，status: 0隐藏 1显示；update_time 可留空）
 -- ---------------------------------------------------------------------
 INSERT INTO review
 (id, user_id, order_id, room_type_id, content, score, is_anonymous, status, reply, reply_time, create_time) VALUES

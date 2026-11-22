@@ -39,10 +39,11 @@ logging:
         controller: info
 hotel:
   deepseek:
-    # 大模型 API Key（请填写你自己的 DeepSeek API Key）
-    api-key: YOUR_DEEPSEEK_API_KEY
-    base-url: https://api.deepseek.com
-    model: deepseek-chat
+    # 大模型 API Key 不写死在这里：用环境变量 DEEPSEEK_API_KEY 注入，
+    # 或写进被 .gitignore 忽略的 application-local.yml（同名键）
+    api-key: ${DEEPSEEK_API_KEY:}
+    base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+    model: ${DEEPSEEK_MODEL:deepseek-chat}
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: wx2004081429112911
