@@ -25,4 +25,6 @@ public interface PerformanceService {
      * @param updateDTO 更新信息
      */
     void update(Long adminId, PerformanceUpdateDTO updateDTO);
+
+    void delete(Long adminId, Long id);
 }

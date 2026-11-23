@@ -73,8 +73,8 @@
             <div class="stats-content">
               <el-icon class="stats-icon" color="#E6A23C"><Bell /></el-icon>
               <div class="stats-info">
-                <div class="stats-value">{{ roomStats.reserved }}</div>
-                <div class="stats-label">已预订</div>
+                <div class="stats-value">{{ roomStats.maintenance }}</div>
+                <div class="stats-label">维修中</div>
               </div>
             </div>
           </el-card>
@@ -100,14 +100,14 @@
           <el-card class="task-card">
             <template #header>
               <div class="card-header">
-                <h3>待处理订单</h3>
+                <h3>待入住订单</h3>
                 <el-button text @click="goToOrderManagement">查看全部</el-button>
               </div>
             </template>
             <el-table :data="pendingOrders" stripe style="width: 100%">
               <el-table-column prop="orderNo" label="订单号" width="120" />
               <el-table-column prop="guestName" label="客人姓名" width="100" />
-              <el-table-column prop="roomType" label="房型" width="120" />
+              <el-table-column prop="roomTypeName" label="房型" width="120" />
               <el-table-column prop="checkInDate" label="入住日期" width="100" />
               <el-table-column fixed="right" label="操作" width="120">
                 <template #default="scope">
@@ -131,15 +131,15 @@
             </template>
             <el-table :data="recentGuests" stripe style="width: 100%">
               <el-table-column prop="guestName" label="客人姓名" width="100" />
-              <el-table-column prop="roomNo" label="房间号" width="100" />
-              <el-table-column prop="checkInDate" label="入住日期" width="120" />
-              <el-table-column prop="checkOutDate" label="退房日期" width="120" />
+              <el-table-column prop="roomNumber" label="房间号" width="100" />
+              <el-table-column prop="checkInTime" label="入住时间" width="160" />
+              <el-table-column prop="checkOutDate" label="预计退房日期" width="120" />
               <el-table-column fixed="right" label="操作" width="120">
                 <template #default="scope">
                   <el-button 
                     type="primary" 
                     size="small" 
-                    @click="handleViewGuest(scope.row.id)"
+                    @click="handleViewCheckIn(scope.row.id)"
                   >查看</el-button>
                 </template>
               </el-table-column>
@@ -160,7 +160,7 @@
           </el-card>
         </el-col>
         <el-col :span="6">
-          <el-card shadow="hover" class="action-card" @click="goToCheckInManagement">
+          <el-card shadow="hover" class="action-card" @click="goToOrderManagement">
             <el-icon><Right /></el-icon>
             <span>入住办理</span>
           </el-card>
@@ -198,13 +198,7 @@ import {
   Refresh
 } from '@element-plus/icons-vue'
 import { checkIn, checkOut, getAttendanceStatus } from '@/api/employee'
-import { 
-  getRoomStatusList, 
-  getOrderList, 
-  getCheckInList, 
-  getCheckOutList,
-  getGuestStayRecords
-} from '@/api/reception'
+import { getRoomStatusList, getOrderList, getCheckInList } from '@/api/reception'
 
 const router = useRouter()
 const loading = ref(false)
@@ -221,16 +215,12 @@ const attendanceStatus = ref({
 const roomStats = ref({
   available: 0,
   occupied: 0,
-  reserved: 0,
+  maintenance: 0,
   cleaning: 0
 })
 
-// 待处理订单
+// 待入住订单
 const pendingOrders = ref([])
-
-// 今日入住和退房
-const todayCheckIns = ref([])
-const todayCheckOuts = ref([])
 
 // 最近客人记录
 const recentGuests = ref([])
@@ -240,7 +230,13 @@ const fetchAttendanceStatus = async () => {
   try {
     const res = await getAttendanceStatus()
     if (res.code === 200) {
-      attendanceStatus.value = res.data
+      const { checkInTime, checkOutTime } = res.data
+      attendanceStatus.value = {
+        hasCheckedIn: Boolean(checkInTime),
+        hasCheckedOut: Boolean(checkOutTime),
+        checkInTime,
+        checkOutTime
+      }
     }
   } catch (error) {
     console.error('获取签到状态失败:', error)
@@ -279,84 +275,44 @@ const handleCheckOut = async () => {
 // 获取房态统计
 const fetchRoomStats = async () => {
   try {
-    const res = await getRoomStatusList()
-    if (res.code === 200) {
-      const data = res.data
-      roomStats.value = {
-        available: data.filter(room => room.status === 'AVAILABLE').length,
-        occupied: data.filter(room => room.status === 'OCCUPIED').length,
-        reserved: data.filter(room => room.status === 'RESERVED').length,
-        cleaning: data.filter(room => room.status === 'CLEANING').length
-      }
-    }
+    const statuses = { available: 1, occupied: 2, cleaning: 3, maintenance: 4 }
+    const totals = await Promise.all(Object.entries(statuses).map(async ([key, status]) => {
+      const { data } = await getRoomStatusList({ status, pageNum: 1, pageSize: 1 })
+      return [key, data.total]
+    }))
+    roomStats.value = Object.fromEntries(totals)
   } catch (error) {
     console.error('获取房态统计失败:', error)
     ElMessage.error('获取房态统计失败')
   }
 }
 
-// 获取待处理订单
+// 获取已支付待入住的订单
 const fetchPendingOrders = async () => {
   try {
-    const res = await getOrderList({ 
-      status: 'PENDING',
-      limit: 5,
-      current: 1
+    const res = await getOrderList({
+      status: 2,
+      pageNum: 1,
+      pageSize: 5
     })
     if (res.code === 200) {
-      pendingOrders.value = res.data.list || []
+      pendingOrders.value = res.data?.records ?? res.data?.list ?? []
     }
   } catch (error) {
-    console.error('获取待处理订单失败:', error)
-    ElMessage.error('获取待处理订单失败')
-  }
-}
-
-// 获取今日入住信息
-const fetchTodayCheckIns = async () => {
-  try {
-    const today = new Date().toISOString().split('T')[0]
-    const res = await getCheckInList({ 
-      checkInDate: today,
-      limit: 5,
-      current: 1
-    })
-    if (res.code === 200) {
-      todayCheckIns.value = res.data.list || []
-    }
-  } catch (error) {
-    console.error('获取今日入住信息失败:', error)
-    ElMessage.error('获取今日入住信息失败')
-  }
-}
-
-// 获取今日退房信息
-const fetchTodayCheckOuts = async () => {
-  try {
-    const today = new Date().toISOString().split('T')[0]
-    const res = await getCheckOutList({ 
-      checkOutDate: today,
-      limit: 5,
-      current: 1
-    })
-    if (res.code === 200) {
-      todayCheckOuts.value = res.data.list || []
-    }
-  } catch (error) {
-    console.error('获取今日退房信息失败:', error)
-    ElMessage.error('获取今日退房信息失败')
+    console.error('获取待入住订单失败:', error)
+    ElMessage.error('获取待入住订单失败')
   }
 }
 
 // 获取最近客人记录
 const fetchRecentGuests = async () => {
   try {
-    const res = await getGuestStayRecords({
-      limit: 5,
-      current: 1
+    const res = await getCheckInList({
+      pageNum: 1,
+      pageSize: 5
     })
     if (res.code === 200) {
-      recentGuests.value = res.data.list || []
+      recentGuests.value = res.data?.records ?? res.data?.list ?? []
     }
   } catch (error) {
     console.error('获取最近客人记录失败:', error)
@@ -371,8 +327,6 @@ const refreshAllData = () => {
     fetchAttendanceStatus(),
     fetchRoomStats(),
     fetchPendingOrders(),
-    fetchTodayCheckIns(),
-    fetchTodayCheckOuts(),
     fetchRecentGuests()
   ]).finally(() => {
     loading.value = false
@@ -381,21 +335,14 @@ const refreshAllData = () => {
 }
 
 // 页面导航
-const goToRoomManagement = () => router.push('/staff/rooms')
-const goToOrderManagement = () => router.push('/staff/orders')
-const goToCheckInManagement = () => router.push('/staff/check-ins')
-const goToCheckOutManagement = () => router.push('/staff/check-outs')
-const goToGuestManagement = () => router.push('/staff/guests')
+const goToRoomManagement = () => router.push({ name: 'StaffRoomStatus' })
+const goToOrderManagement = () => router.push({ name: 'StaffOrders' })
+const goToCheckOutManagement = () => router.push({ name: 'StaffCheckOut' })
+const goToGuestManagement = () => router.push({ name: 'StaffGuest' })
 
 // 查看详情
-const handleViewOrder = (id) => router.push(`/staff/orders/${id}`)
-const handleViewCheckIn = (id) => router.push(`/staff/check-in-detail/${id}`)
-const handleViewCheckOut = (id) => router.push(`/staff/check-out/${id}`)
-const handleViewGuest = (id) => router.push(`/staff/guest/${id}`)
-
-// 处理操作
-const handleProcessCheckIn = (id) => router.push(`/staff/check-in/${id}`)
-const handleProcessCheckOut = (id) => router.push(`/staff/check-out/${id}`)
+const handleViewOrder = (orderId) => router.push({ name: 'StaffOrder', query: { orderId } })
+const handleViewCheckIn = (checkInId) => router.push({ name: 'StaffCheckInList', query: { checkInId } })
 
 onMounted(() => {
   refreshAllData()

@@ -1,6 +1,7 @@
 package com.example.hotel_back.Service;
 
 import com.example.hotel_back.Pojo.DAO.*;
+import com.example.hotel_back.Pojo.VO.CustomerStatVO;
 import com.example.hotel_back.Pojo.VO.ExpenseStatVO;
 import com.example.hotel_back.Pojo.VO.IncomeStatVO;
 import com.example.hotel_back.Pojo.VO.ProfitStatVO;
@@ -8,6 +9,7 @@ import com.example.hotel_back.Pojo.VO.RoomSalesStatVO;
 import com.example.hotel_back.Pojo.VO.OccupancyStatVO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface StatsService {
     
@@ -17,6 +19,8 @@ public interface StatsService {
      * @return 客房销售统计列表
      */
     List<RoomSalesStatVO> getRoomSalesStats(RoomSalesQueryDTO queryDTO);
+
+    List<CustomerStatVO> getCustomerStats(RoomSalesQueryDTO queryDTO);
     /**
      * 获取收入统计
      * @param queryDTO 查询条件
@@ -41,4 +45,9 @@ public interface StatsService {
      * @return 入住率统计列表
      */
     List<OccupancyStatVO> getOccupancyStats(OccupancyStatsQueryDTO queryDTO);
+    /**
+     * 获取数据大屏总览数据
+     * @return 总览数据（今日营收、订单数、在住数、房态分布、支付占比等）
+     */
+    Map<String, Object> getOverview();
 }

@@ -6,6 +6,8 @@
             ci.id,
             ci.order_id as orderId,
             bo.order_no as orderNo,
+            ci.guest_name as guestName,
+            ci.guest_phone as guestPhone,
             r.room_number as roomNumber,
             rt.type_name as roomTypeName,
             ci.check_in_time as checkInTime,

@@ -227,7 +227,9 @@ const goBack = () => {
           </div>
         </template>
         
-        <el-form 
+        <el-empty v-if="!orderId" description="请先在预订管理中选择一笔已支付待入住的订单" />
+        <el-form
+          v-else
           ref="formRef"
           :model="checkInForm"
           :rules="rules"

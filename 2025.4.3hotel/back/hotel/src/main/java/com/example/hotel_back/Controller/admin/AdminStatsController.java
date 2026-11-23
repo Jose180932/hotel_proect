@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/stats")
@@ -36,6 +37,17 @@ public class AdminStatsController {
         List<RoomSalesStatVO> statsList = statsService.getRoomSalesStats(queryDTO);
         return Result.success(statsList);
     }
+    @GetMapping("/customers")
+    public Result<List<CustomerStatVO>> getCustomerStats(RoomSalesQueryDTO queryDTO) {
+        if (queryDTO.getStartDate() == null || queryDTO.getEndDate() == null) {
+            return Result.error("开始日期和结束日期不能为空");
+        }
+        if (queryDTO.getStartDate().isAfter(queryDTO.getEndDate())) {
+            return Result.error("开始日期不能晚于结束日期");
+        }
+        return Result.success(statsService.getCustomerStats(queryDTO));
+    }
+
     @GetMapping("/income")
     public Result<List<IncomeStatVO>> getIncomeStats(IncomeStatsQueryDTO queryDTO) {
         log.info("查询收入统计，开始日期：{}，结束日期：{}，分组方式：{}",
@@ -127,5 +139,11 @@ public class AdminStatsController {
 
         List<OccupancyStatVO> statsList = statsService.getOccupancyStats(queryDTO);
         return Result.success(statsList);
+    }
+    @GetMapping("/overview")
+    public Result<Map<String, Object>> getOverview() {
+        log.info("查询数据大屏总览数据");
+        Map<String, Object> overview = statsService.getOverview();
+        return Result.success(overview);
     }
 }

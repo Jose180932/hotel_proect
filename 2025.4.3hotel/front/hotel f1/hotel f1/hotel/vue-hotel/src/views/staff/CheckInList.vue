@@ -1,10 +1,11 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getCheckInList, getCheckInDetail } from '@/api/reception'
 
 const router = useRouter()
+const route = useRoute()
 const loading = ref(true)
 const detailLoading = ref(false)
 const checkInDialogVisible = ref(false)
@@ -39,6 +40,11 @@ const pagination = reactive({
 
 onMounted(() => {
   fetchCheckInList()
+
+  const checkInId = route.query.checkInId
+  if (typeof checkInId === 'string' && /^[1-9]\d*$/.test(checkInId)) {
+    viewCheckInDetail(checkInId)
+  }
 })
 
 // 获取入住记录列表
@@ -122,10 +128,10 @@ const handleSizeChange = (val) => {
 }
 
 // 获取入住详情
-const viewCheckInDetail = async (row) => {
+const viewCheckInDetail = async (checkInId) => {
   detailLoading.value = true
   try {
-    const res = await getCheckInDetail(row.id)
+    const res = await getCheckInDetail(checkInId)
     
     if (res.code === 200) {
       currentCheckIn.value = {
@@ -134,7 +140,7 @@ const viewCheckInDetail = async (row) => {
       }
       checkInDialogVisible.value = true
     } else {
-      ElMessage.error(res.message || '获取入住详情失败')
+      ElMessage.error(res.msg || res.message || '获取入住详情失败')
     }
   } catch (error) {
     console.error('获取入住详情错误:', error)
@@ -317,7 +323,7 @@ const handleCheckOut = (row) => {
                 <el-button
                   size="small"
                   type="primary"
-                  @click="viewCheckInDetail(row)"
+                  @click="viewCheckInDetail(row.id)"
                 >
                   详情
                 </el-button>

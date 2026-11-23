@@ -11,6 +11,7 @@ import com.example.hotel_back.Pojo.DAO.employeedao.EAttendanceQueryDTO;
 import com.example.hotel_back.Pojo.Entity.Attendance;
 import com.example.hotel_back.Pojo.Entity.Employee;
 import com.example.hotel_back.Pojo.VO.AttendanceVO;
+import com.example.hotel_back.Pojo.VO.employeevo.AttendanceStatusVO;
 import com.example.hotel_back.Pojo.VO.employeevo.EAttendanceVO;
 import com.example.hotel_back.Service.AttendanceService;
 import com.example.hotel_back.mapper.AdminMapper;
@@ -171,18 +172,12 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         log.info("考勤状态更新成功，考勤ID：{}，状态：{}", updateDTO.getId(), status);
     }
-    public Integer getAttendanceStatus(Long employeeId, LocalDate date) {
-        // 查询员工当日签到记录
+    @Override
+    public AttendanceStatusVO getAttendanceStatus(Long employeeId, LocalDate date) {
         Attendance attendance = attendanceMapper.getByEmployeeIdAndDate(employeeId, date);
-
-        // 如果没有记录，返回null
         if (attendance == null) {
-            return null;
+            return new AttendanceStatusVO(-1, null, null);
         }
-
-
-
-
-        return attendance.getStatus();
+        return new AttendanceStatusVO(attendance.getStatus(), attendance.getCheckInTime(), attendance.getCheckOutTime());
     }
 }

@@ -99,7 +99,7 @@ const testDirectAPI = async () => {
     apiResult.value = { status: '请求中...' }
     
     // 测试房型API
-    const roomResponse = await axios.get('/api/roomType/hot')
+    const roomResponse = await axios.get('/api/user/roomType/hot')
     
     apiResult.value = {
       status: '成功',

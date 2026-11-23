@@ -70,7 +70,7 @@ const avatarRef = ref(null)
 const token = computed(() => localStorage.getItem('token') || '')
 
 // 从环境变量获取配置
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const apiBaseUrl = '' // 相对路径，交给 vite 代理 / 同源
 const uploadUrl = `${apiBaseUrl}/api/admin/common/upload` // 修改为正确的上传接口
 
 // 获取用户信息

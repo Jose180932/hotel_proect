@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getPerformanceList, addPerformance, updatePerformance, getEmployeeList } from '@/api/admin'
+import { getPerformanceList, addPerformance, updatePerformance, deletePerformanceRecord, getEmployeeList } from '@/api/admin'
 
 // 搜索表单
 const searchForm = ref({
@@ -220,22 +220,12 @@ const closeDeleteDialog = () => {
 // 删除绩效
 const deletePerformance = async () => {
   try {
-    const response = await axios.delete(`/api/admin/performance/delete/${selectedItem.value.id}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    })
-    
-    if (response.data.code === 200) {
-      ElMessage.success('删除成功')
-      closeDeleteDialog()
-      fetchPerformance()
-    } else {
-      ElMessage.error(response.data.message || '删除失败')
-    }
+    await deletePerformanceRecord(selectedItem.value.id)
+    ElMessage.success('删除成功')
+    closeDeleteDialog()
+    fetchPerformance()
   } catch (error) {
     console.error('删除绩效失败:', error)
-    ElMessage.error('删除失败')
   }
 }
 

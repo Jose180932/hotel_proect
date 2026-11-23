@@ -168,7 +168,7 @@ const viewOrderDetail = (orderId) => {
               <span>退房记录</span>
             </div>
             <div class="header-actions">
-              <el-button type="primary" @click="router.push('/staff/rooms')">
+              <el-button type="primary" @click="router.push({ name: 'StaffRoomStatus' })">
                 <el-icon><Back /></el-icon>
                 返回房态管理
               </el-button>

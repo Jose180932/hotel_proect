@@ -45,6 +45,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/login")
                 .excludePathPatterns("/user/register")
+                // 房型浏览属于公开信息：允许未登录访客查看首页/房型详情
+                .excludePathPatterns("/user/roomType/**")
                 .excludePathPatterns("/admin/common/**");
     }
     @Value("${file.upload-path}")

@@ -16,7 +16,7 @@ const order = ref(null)
 const imageList = ref([])
 
 // 基础URL配置 - 从环境变量获取
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const baseUrl = '' // 相对路径，交给 vite 代理 / 同源
 
 // token处理
 const token = computed(() => localStorage.getItem('token') || '')

@@ -18,7 +18,7 @@ const userInfo = ref(null)
 const userLoading = ref(false)
 
 // 从环境变量获取基础URL
-const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+const baseUrl = '' // 相对路径，交给 vite 代理 / 同源
 
 // 处理图片URL
 const processImageUrl = (url) => {

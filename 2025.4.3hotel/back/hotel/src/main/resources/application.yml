@@ -8,6 +8,8 @@ spring:
   servlet:
     multipart:
       location:
+      max-file-size: 10MB
+      max-request-size: 12MB
   profiles:
     active: dev
   main:
@@ -38,6 +40,30 @@ logging:
         service: debug
         controller: info
 hotel:
+  deepseek:
+    # 大模型 API Key 不写死在这里：用环境变量 DEEPSEEK_API_KEY 注入，
+    # 或写进被 .gitignore 忽略的 application-local.yml（同名键）
+    api-key: ${DEEPSEEK_API_KEY:}
+    base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+    model: ${DEEPSEEK_MODEL:deepseek-chat}
+  rag:
+    # 知识库检索模式：keyword（无需额外服务） | vector（需 embedding） | hybrid
+    retrieval-mode: ${RAG_RETRIEVAL_MODE:keyword}
+    # 启动时自动导入 classpath:kb/*.md（按内容哈希幂等）
+    auto-ingest: true
+    doc-pattern: classpath:kb/*.md
+    top-k: 3
+    min-score: 0.3
+    chunk-size: 300
+    chunk-overlap: 60
+  embedding:
+    # none = 不启用向量；openai-compat = 兼容 OpenAI /embeddings 的服务（硅基流动/百炼/智谱/Ollama）
+    provider: ${EMBEDDING_PROVIDER:none}
+    base-url: ${EMBEDDING_BASE_URL:https://api.siliconflow.cn/v1}
+    api-key: ${EMBEDDING_API_KEY:}
+    model: ${EMBEDDING_MODEL:BAAI/bge-m3}
+    dim: ${EMBEDDING_DIM:1024}
+    timeout-ms: 20000
   jwt:
     # 设置jwt签名加密时使用的秘钥
     admin-secret-key: wx2004081429112911

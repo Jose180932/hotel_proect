@@ -234,7 +234,7 @@ const staffRoutes = [
         path: 'dashboard',
         name: 'StaffDashboard',
         component: () => import('@/views/staff/Dashboard.vue'),
-        meta: { 
+        meta: {
           title: '员工仪表盘',
           requireStaffAuth: true
         }
@@ -243,7 +243,7 @@ const staffRoutes = [
         path: 'profile',
         name: 'StaffProfile',
         component: () => import('@/views/staff/ProfileManage.vue'),
-        meta: { 
+        meta: {
           title: '员工个人中心',
           requireStaffAuth: true
         }
@@ -330,6 +330,12 @@ const adminRoutes = [
         meta: { title: '管理首页', requireAdminAuth: true }
       },
       {
+        path: 'knowledge',
+        name: 'AdminKnowledge',
+        component: () => import('../views/admin/Knowledge.vue'),
+        meta: { title: '知识库', requireAdminAuth: true }
+      },
+      {
         path: 'attendance',
         name: 'AdminAttendance',
         component: () => import('../views/admin/Attendance.vue'),
@@ -340,18 +346,6 @@ const adminRoutes = [
         name: 'AdminAccount',
         component: () => import('../views/admin/Account.vue'),
         meta: { title: '账户管理', requireAdminAuth: true }
-      },
-      {
-        path: 'role',
-        name: 'AdminRole',
-        component: () => import('../views/admin/Role.vue'),
-        meta: { title: '角色管理', requireAdminAuth: true }
-      },
-      {
-        path: 'role-manage',
-        name: 'AdminRoleManage',
-        component: () => import('../views/admin/RoleManage.vue'),
-        meta: { title: '角色管理', requireAdminAuth: true }
       },
       {
         path: 'employee-manage',
@@ -412,6 +406,12 @@ const adminRoutes = [
         name: 'AdminReport',
         component: () => import('../views/admin/Report.vue'),
         meta: { title: '报表统计', requireAdminAuth: true }
+      },
+      {
+        path: 'bigscreen',
+        name: 'AdminBigScreen',
+        component: () => import('../views/admin/BigScreen.vue'),
+        meta: { title: '数据大屏', requireAdminAuth: true }
       }
     ]
   }
@@ -441,7 +441,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - 酒店预订系统` : '酒店预订系统'
-  
+
   // 访问登录页面的处理
   if (to.path === '/login') {
     // 检查是否有管理员/员工登录
@@ -461,18 +461,18 @@ router.beforeEach((to, from, next) => {
         console.error('解析登录信息失败', e);
       }
     }
-    
+
     // 检查普通用户是否登录
     if (localStorage.getItem('token')) {
       next('/');
       return;
     }
-    
+
     // 未登录访问登录页面，允许访问
     next();
     return;
   }
-  
+
   // 检查页面是否需要用户登录
   if (to.meta.requireAuth) {
     // 检查用户是否已登录
@@ -486,18 +486,18 @@ router.beforeEach((to, from, next) => {
       return;
     }
   }
-  
+
   // 检查是否需要员工登录权限
   if (to.meta.requireStaffAuth) {
     const employeeData = localStorage.getItem('LoginEmployee');
-    
+
     if (!employeeData) {
       // 清除可能存在的不完整登录信息
       localStorage.removeItem('staffLoggedIn');
       localStorage.removeItem('staffUsername');
       localStorage.removeItem('staffRole');
       localStorage.removeItem('staffToken');
-      
+
       console.log('需要员工登录权限，重定向到登录页');
       next({
         path: '/login',
@@ -505,7 +505,7 @@ router.beforeEach((to, from, next) => {
       });
       return;
     }
-    
+
     try {
       const employee = JSON.parse(employeeData);
       // 员工(roleId=2)和管理员(roleId=1)都可以访问员工页面
@@ -521,7 +521,7 @@ router.beforeEach((to, from, next) => {
       return;
     }
   }
-  
+
   // 检查是否需要管理员登录权限
   if (to.meta.requireAdminAuth) {
     const adminData = localStorage.getItem('LoginEmployee');
@@ -533,7 +533,7 @@ router.beforeEach((to, from, next) => {
       });
       return;
     }
-    
+
     try {
       const employee = JSON.parse(adminData);
       if (employee.roleId !== 1) {
@@ -548,7 +548,7 @@ router.beforeEach((to, from, next) => {
       return;
     }
   }
-  
+
   next();
 })
 

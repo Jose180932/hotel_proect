@@ -53,4 +53,10 @@ public interface AdminService {
      * @param employeeUpdateAdminDTO 员工信息
      */
     void updateEmployee(EmployeeUpdateAdminDTO employeeUpdateAdminDTO);
+
+    /**
+     * 解雇员工（不能解雇自己、不能解雇超级管理员）
+     * @param employeeId 员工ID
+     */
+    void fireEmployee(Long employeeId);
 }

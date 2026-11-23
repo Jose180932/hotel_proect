@@ -6,7 +6,7 @@ import {
   ElMessageBox 
 } from 'element-plus'
 import { getGuestStayRecords, getReviewList, replyGuestReview } from '@/api/reception'
-import { getGuestList, getGuestDetail } from '@/api/staff'
+import { getGuestList } from '@/api/staff'
 
 const router = useRouter()
 const loading = ref(false)
@@ -136,51 +136,10 @@ const stayRecordsPagination = reactive({
 })
 const currentIdCard = ref('')
 
-// 获取模拟客人详情
-const getMockGuestDetail = (guest) => {
-  return {
-    ...guest,
-    id: guest.id,
-    name: guest.name,
-    phone: guest.phone,
-    idCard: guest.idCard,
-    status: guest.status || '在住',
-    roomNumber: guest.roomNumber || '',
-    orderNo: guest.orderNo || '',
-    roomTypeName: guest.roomTypeName || '',
-    checkInDate: guest.checkInDate || '',
-    checkOutDate: guest.checkOutDate || '',
-    days: guest.days || 0,
-    totalAmount: guest.totalAmount || 0,
-    orderId: guest.orderId || 0
-  }
-}
-
-// 获取客人详情
-const viewGuestDetail = async (guest) => {
-  try {
-    loading.value = true
-    // 修复API路径问题
-    const res = await getGuestDetail(guest.id)
-    
-    if (res.code === 200) {
-      currentGuest.value = res.data
-      guestDetailVisible.value = true
-    } else {
-      // 如果API返回错误，使用模拟数据
-      currentGuest.value = getMockGuestDetail(guest)
-      guestDetailVisible.value = true
-      ElMessage.warning('使用临时客人信息，API返回错误')
-    }
-  } catch (error) {
-    console.error('获取客人详情错误:', error)
-    // 如果API调用失败，使用模拟数据
-    currentGuest.value = getMockGuestDetail(guest)
-    guestDetailVisible.value = true
-    ElMessage.warning('使用临时客人信息，详细信息获取失败')
-  } finally {
-    loading.value = false
-  }
+// 入住历史接口已返回详情弹窗使用的字段
+const viewGuestDetail = (guest) => {
+  currentGuest.value = guest
+  guestDetailVisible.value = true
 }
 
 // 查看入住记录

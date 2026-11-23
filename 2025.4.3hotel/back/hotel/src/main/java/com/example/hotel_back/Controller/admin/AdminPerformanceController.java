@@ -43,4 +43,10 @@ public class AdminPerformanceController {
         performanceService.update(adminId, updateDTO);
         return Result.success();
     }
+
+    @DeleteMapping("/delete/{id}")
+    public Result<Void> delete(@PathVariable("id") Long id) {
+        performanceService.delete(BaseContext.getCurrentId(), id);
+        return Result.success();
+    }
 }
